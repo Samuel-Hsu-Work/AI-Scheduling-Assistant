@@ -28,21 +28,31 @@ router.post("/", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
-  const event = updateEvent(req.params.id, req.body);
-  if (!event) {
-    res.status(404).json({ error: "Event not found" });
-    return;
+  try {
+    const event = updateEvent(req.params.id, req.body);
+    if (!event) {
+      res.status(404).json({ error: "Event not found" });
+      return;
+    }
+    res.json(event);
+  } catch (err) {
+    console.error("Failed to update event:", err);
+    res.status(500).json({ error: "Failed to save event" });
   }
-  res.json(event);
 });
 
 router.delete("/:id", (req, res) => {
-  const deleted = deleteEvent(req.params.id);
-  if (!deleted) {
-    res.status(404).json({ error: "Event not found" });
-    return;
+  try {
+    const deleted = deleteEvent(req.params.id);
+    if (!deleted) {
+      res.status(404).json({ error: "Event not found" });
+      return;
+    }
+    res.status(204).send();
+  } catch (err) {
+    console.error("Failed to delete event:", err);
+    res.status(500).json({ error: "Failed to delete event" });
   }
-  res.status(204).send();
 });
 
 export default router;

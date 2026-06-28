@@ -3,8 +3,13 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import type { CalendarEvent } from "../types.js";
 
-const DATA_DIR = process.env.DATA_DIR ?? join(process.cwd(), "data");
+const DATA_DIR =
+  process.env.DATA_DIR ?? "/tmp/ai-calendar-assistant";
 const STORAGE_PATH = join(DATA_DIR, "events.json");
+
+export function getStoragePath(): string {
+  return STORAGE_PATH;
+}
 
 function ensureStorage(): void {
   if (!existsSync(DATA_DIR)) {
