@@ -1,0 +1,27 @@
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import eventsRouter from "./routes/events.js";
+import chatRouter from "./routes/chat.js";
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+const FRONTEND_URL = process.env.FRONTEND_URL;
+
+app.use(
+  cors({
+    origin: FRONTEND_URL || true,
+  })
+);
+app.use(express.json());
+
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
+app.use("/events", eventsRouter);
+app.use("/chat", chatRouter);
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
