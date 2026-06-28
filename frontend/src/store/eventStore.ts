@@ -21,7 +21,7 @@ type EventStore = {
   setPipelineStep: (step: PipelineStep) => void;
   setPendingAction: (action: PendingAction | null) => void;
   setLoading: (loading: boolean) => void;
-  executePendingAction: () => Promise<void>;
+  executePendingAction: () => Promise<boolean>;
   cancelPendingAction: () => void;
 };
 
@@ -61,7 +61,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
 
   executePendingAction: async () => {
     const { pendingAction } = get();
-    if (!pendingAction) return;
+    if (!pendingAction) return false;
 
     set({ pipelineStep: "crud_execution" });
     const { intent, arguments: args } = pendingAction;
@@ -96,9 +96,11 @@ export const useEventStore = create<EventStore>((set, get) => ({
           set({ pipelineStep: "idle" });
         }
       }, 2000);
+      return true;
     } catch {
       get().addMessage("assistant", "Something went wrong executing that action.");
       set({ pipelineStep: "idle", pendingAction: null });
+      return false;
     }
   },
 

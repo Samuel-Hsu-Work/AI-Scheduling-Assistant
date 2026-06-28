@@ -104,8 +104,10 @@ export function Chat() {
   }
 
   async function handleConfirm() {
-    await executePendingAction();
-    addMessage("assistant", "Done! Your calendar has been updated.");
+    const success = await executePendingAction();
+    if (success) {
+      addMessage("assistant", "Done! Your calendar has been updated.");
+    }
   }
 
   return (

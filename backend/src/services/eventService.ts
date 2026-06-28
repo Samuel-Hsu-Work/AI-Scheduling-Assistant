@@ -1,14 +1,23 @@
 import { randomUUID } from "crypto";
-import { readFileSync, writeFileSync } from "fs";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { join } from "path";
 import type { CalendarEvent } from "../types.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const STORAGE_PATH = join(__dirname, "../storage/events.json");
+const DATA_DIR = process.env.DATA_DIR ?? join(process.cwd(), "data");
+const STORAGE_PATH = join(DATA_DIR, "events.json");
+
+function ensureStorage(): void {
+  if (!existsSync(DATA_DIR)) {
+    mkdirSync(DATA_DIR, { recursive: true });
+  }
+  if (!existsSync(STORAGE_PATH)) {
+    writeFileSync(STORAGE_PATH, "[]");
+  }
+}
 
 function readEvents(): CalendarEvent[] {
   try {
+    ensureStorage();
     const data = readFileSync(STORAGE_PATH, "utf-8");
     return JSON.parse(data) as CalendarEvent[];
   } catch {
@@ -17,6 +26,7 @@ function readEvents(): CalendarEvent[] {
 }
 
 function writeEvents(events: CalendarEvent[]): void {
+  ensureStorage();
   writeFileSync(STORAGE_PATH, JSON.stringify(events, null, 2));
 }
 

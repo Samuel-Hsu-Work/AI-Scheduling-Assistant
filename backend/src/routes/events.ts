@@ -18,8 +18,13 @@ router.post("/", (req, res) => {
     res.status(400).json({ error: "title, start, and end are required" });
     return;
   }
-  const event = createEvent({ title, start, end, description, location });
-  res.status(201).json(event);
+  try {
+    const event = createEvent({ title, start, end, description, location });
+    res.status(201).json(event);
+  } catch (err) {
+    console.error("Failed to create event:", err);
+    res.status(500).json({ error: "Failed to save event" });
+  }
 });
 
 router.put("/:id", (req, res) => {
